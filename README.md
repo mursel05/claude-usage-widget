@@ -7,7 +7,8 @@ A fixed **2×2** widget with two rings:
 - **5-hour** and **Weekly**: percent in the ring, label and live countdown under it ("in 2h 13m", ticks every minute while the screen is on).
 - **Free resets** row: how many "Reset for free" limit resets you have and when the earliest expires. Tap it to open claude.ai usage settings. Hidden when you have none.
 - Ring and percent turn amber at 70% and red at 90%.
-- Data refreshes every 15 minutes (the Android minimum), right after a window resets, and when you tap the widget.
+- Data refreshes every 15 minutes (the Android minimum) and right after a window resets.
+- **Tap anywhere on the widget to refresh now.** While it loads, the numbers dim and a spinner shows "Updating…". Taps within 30 seconds of the last refresh are ignored.
 - When the session expires, the widget says so. Tap it to sign in again.
 - Free and open source. The only dependency is AndroidX WorkManager.
 

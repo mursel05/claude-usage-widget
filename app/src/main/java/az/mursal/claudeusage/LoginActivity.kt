@@ -130,6 +130,7 @@ class LoginActivity : Activity() {
     private fun finishWithSuccess() {
         finished = true
         val store = UsageStore(this)
+        store.lastAttemptAt = System.currentTimeMillis()
         store.refreshing = true
         // With a configure activity, onUpdate isn't guaranteed on add, so kick things off here.
         WidgetRenderer.renderAll(this)

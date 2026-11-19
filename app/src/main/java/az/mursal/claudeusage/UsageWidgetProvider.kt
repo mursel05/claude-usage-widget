@@ -32,7 +32,12 @@ class UsageWidgetProvider : AppWidgetProvider() {
         super.onReceive(context, intent)
         when (intent.action) {
             ACTION_REFRESH -> {
-                UsageStore(context).refreshing = true
+                val store = UsageStore(context)
+                val now = System.currentTimeMillis()
+                // Tap cooldown: ignore silently while a refresh runs or within 30 s of the last one.
+                if (store.isRefreshing(now) || now - store.lastAttemptAt < TAP_COOLDOWN_MS) return
+                store.lastAttemptAt = now
+                store.refreshing = true
                 WidgetRenderer.renderAll(context)
                 RefreshScheduler.refreshNow(context)
             }
@@ -54,5 +59,6 @@ class UsageWidgetProvider : AppWidgetProvider() {
         const val ACTION_REFRESH = "az.mursal.claudeusage.ACTION_REFRESH"
         const val ACTION_TICK = "az.mursal.claudeusage.ACTION_TICK"
         private const val MIN_AUTO_REFRESH_GAP_MS = 60_000L
+        private const val TAP_COOLDOWN_MS = 30_000L
     }
 }

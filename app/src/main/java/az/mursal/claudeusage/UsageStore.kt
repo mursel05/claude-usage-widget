@@ -74,6 +74,10 @@ class UsageStore(context: Context) {
         get() = prefs.getBoolean(KEY_REFRESHING, false)
         set(value) = prefs.edit().putBoolean(KEY_REFRESHING, value).apply()
 
+    /** Refreshing flag with a safety timeout, so a killed worker can't leave the widget "loading" forever. */
+    fun isRefreshing(now: Long = System.currentTimeMillis()): Boolean =
+        refreshing && now - lastAttemptAt < REFRESH_TIMEOUT_MS
+
     var lastAttemptAt: Long
         get() = prefs.getLong(KEY_LAST_ATTEMPT, 0L)
         set(value) = prefs.edit().putLong(KEY_LAST_ATTEMPT, value).apply()
@@ -95,7 +99,7 @@ class UsageStore(context: Context) {
             },
             fetchedAt = fetchedAt,
             errorMessage = prefs.getString(KEY_ERROR, null),
-            refreshing = refreshing,
+            refreshing = isRefreshing(),
         )
     }
 
@@ -119,6 +123,7 @@ class UsageStore(context: Context) {
         const val KEY_FETCHED_AT = "fetched_at"
         const val KEY_REFRESHING = "refreshing"
         const val KEY_LAST_ATTEMPT = "last_attempt"
+        const val REFRESH_TIMEOUT_MS = 60_000L
         const val KEY_RESETS_COUNT = "resets_count"
         const val KEY_RESETS_UNTIL = "resets_until"
         const val PREFIX_FIVE = "five"

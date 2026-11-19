@@ -24,6 +24,7 @@ object WidgetRenderer {
     private const val RING_PX = 240
     private const val RING_STROKE_PX = 24f
     private const val TICK_MS = 60_000L
+    private const val DIM_ALPHA = 100 // of 255
     private const val USAGE_PAGE = "https://claude.ai/settings/usage"
 
     fun renderAll(context: Context) {
@@ -41,18 +42,24 @@ object WidgetRenderer {
         val views = RemoteViews(context.packageName, R.layout.widget_usage)
         val now = System.currentTimeMillis()
 
-        bindRing(context, views, s.fiveHour, R.id.five_ring, R.id.five_pct, R.id.five_reset, now)
-        bindRing(context, views, s.weekly, R.id.week_ring, R.id.week_pct, R.id.week_reset, now)
+        // While refreshing, keep the last numbers visible but dimmed, plus a spinner row.
+        val loading = s.refreshing && s.status != Status.SIGNED_OUT && s.status != Status.AUTH_EXPIRED
+        bindRing(context, views, s.fiveHour, R.id.five_ring, R.id.five_pct, R.id.five_reset, now, loading)
+        bindRing(context, views, s.weekly, R.id.week_ring, R.id.week_pct, R.id.week_reset, now, loading)
 
         val statusText = when (s.status) {
             Status.SIGNED_OUT -> "Tap to sign in"
             Status.AUTH_EXPIRED -> "Session expired · tap to sign in"
             Status.ERROR -> s.errorMessage
-            Status.OK -> if (s.fetchedAt == 0L && s.refreshing) "Loading…" else null
+            Status.OK -> null
         }
 
         val resets = s.resets
-        if (statusText != null) {
+        views.setViewVisibility(R.id.loading_row, if (loading) View.VISIBLE else View.GONE)
+        if (loading) {
+            views.setViewVisibility(R.id.status, View.GONE)
+            views.setViewVisibility(R.id.resets_row, View.GONE)
+        } else if (statusText != null) {
             views.setTextViewText(R.id.status, statusText)
             views.setViewVisibility(R.id.status, View.VISIBLE)
             views.setViewVisibility(R.id.resets_row, View.GONE)
@@ -87,14 +94,21 @@ object WidgetRenderer {
         pctId: Int,
         resetId: Int,
         now: Long,
+        dim: Boolean,
     ) {
         val pct = window?.percent
         val level = levelColor(context, pct)
         views.setImageViewBitmap(ringId, ringBitmap(pct, level ?: context.getColor(R.color.accent)))
+        // ImageView.setImageAlpha and TextView.setTextColor are both safe RemoteViews calls on every API level.
+        views.setInt(ringId, "setImageAlpha", if (dim) DIM_ALPHA else 255)
         views.setTextViewText(pctId, pct?.let { "$it%" } ?: context.getString(R.string.placeholder))
-        views.setTextColor(pctId, level ?: context.getColor(R.color.text_primary))
+        views.setTextColor(pctId, withAlpha(level ?: context.getColor(R.color.text_primary), dim))
         views.setTextViewText(resetId, resetLabel(window, now))
+        views.setTextColor(resetId, withAlpha(context.getColor(R.color.text_secondary), dim))
     }
+
+    private fun withAlpha(color: Int, dim: Boolean): Int =
+        if (dim) (color and 0x00FFFFFF) or (DIM_ALPHA shl 24) else color
 
     /** null = normal level (accent ring, white text). */
     private fun levelColor(context: Context, pct: Int?): Int? = when {
