@@ -2,7 +2,7 @@
 
 A home-screen widget that shows your Claude **5-hour** and **weekly** usage with reset times. There's no launcher app: the widget is the only UI.
 
-A fixed **2×2** widget with two rings:
+A **2×2** widget (can be stretched wider) with two rings:
 
 - **5-hour** and **Weekly**: percent in the ring, label and live countdown under it ("in 2h 13m", ticks every minute while the screen is on).
 - **Free resets** row: how many "Reset for free" limit resets you have and when the earliest expires. Tap it to open claude.ai usage settings. Hidden when you have none.
