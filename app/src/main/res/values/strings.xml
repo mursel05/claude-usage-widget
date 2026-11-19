@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Claude Usage</string>
-    <string name="app_title">Claude</string>
     <string name="widget_description">5-hour and weekly Claude usage with reset times</string>
     <string name="label_five_hour">5-hour</string>
     <string name="label_weekly">Weekly</string>

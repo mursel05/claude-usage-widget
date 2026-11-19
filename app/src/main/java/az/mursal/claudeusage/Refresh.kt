@@ -56,7 +56,7 @@ class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorke
 
             when (val result = withContext(Dispatchers.IO) { ClaudeApi.fetchUsage(credentials) }) {
                 is ClaudeApi.Result.Ok ->
-                    store.saveUsage(result.fiveHour, result.weekly, System.currentTimeMillis())
+                    store.saveUsage(result.fiveHour, result.weekly, result.resets, System.currentTimeMillis())
                 ClaudeApi.Result.AuthExpired -> store.markAuthExpired()
                 is ClaudeApi.Result.Failed -> store.markError(result.message)
             }

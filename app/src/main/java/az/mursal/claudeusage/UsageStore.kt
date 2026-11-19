@@ -6,6 +6,9 @@ import android.content.SharedPreferences
 /** One rate-limit window. [percent] is null when the API doesn't report it; [resetsAt] is epoch millis. */
 data class UsageWindow(val percent: Int?, val resetsAt: Long?)
 
+/** Free limit resets ("Reset for free" on the usage page). [expiresAt]: earliest expiry, epoch millis. */
+data class FreeResets(val count: Int, val expiresAt: Long?)
+
 data class Credentials(val cookie: String, val orgId: String, val userAgent: String)
 
 enum class Status { SIGNED_OUT, OK, AUTH_EXPIRED, ERROR }
@@ -14,6 +17,8 @@ data class Snapshot(
     val status: Status,
     val fiveHour: UsageWindow?,
     val weekly: UsageWindow?,
+    /** null when the API didn't report resets (unknown), as opposed to count = 0. */
+    val resets: FreeResets?,
     val fetchedAt: Long,
     val errorMessage: String?,
     val refreshing: Boolean,
@@ -45,10 +50,12 @@ class UsageStore(context: Context) {
             .apply()
     }
 
-    fun saveUsage(fiveHour: UsageWindow, weekly: UsageWindow, fetchedAt: Long) {
+    fun saveUsage(fiveHour: UsageWindow, weekly: UsageWindow, resets: FreeResets?, fetchedAt: Long) {
         prefs.edit()
             .putWindow(PREFIX_FIVE, fiveHour)
             .putWindow(PREFIX_WEEK, weekly)
+            .putInt(KEY_RESETS_COUNT, resets?.count ?: -1)
+            .putLong(KEY_RESETS_UNTIL, resets?.expiresAt ?: 0L)
             .putLong(KEY_FETCHED_AT, fetchedAt)
             .putString(KEY_STATUS, Status.OK.name)
             .remove(KEY_ERROR)
@@ -83,6 +90,9 @@ class UsageStore(context: Context) {
             status = status,
             fiveHour = if (hasData) readWindow(PREFIX_FIVE) else null,
             weekly = if (hasData) readWindow(PREFIX_WEEK) else null,
+            resets = prefs.getInt(KEY_RESETS_COUNT, -1).takeIf { hasData && it >= 0 }?.let {
+                FreeResets(it, prefs.getLong(KEY_RESETS_UNTIL, 0L).takeIf { t -> t > 0L })
+            },
             fetchedAt = fetchedAt,
             errorMessage = prefs.getString(KEY_ERROR, null),
             refreshing = refreshing,
@@ -109,6 +119,8 @@ class UsageStore(context: Context) {
         const val KEY_FETCHED_AT = "fetched_at"
         const val KEY_REFRESHING = "refreshing"
         const val KEY_LAST_ATTEMPT = "last_attempt"
+        const val KEY_RESETS_COUNT = "resets_count"
+        const val KEY_RESETS_UNTIL = "resets_until"
         const val PREFIX_FIVE = "five"
         const val PREFIX_WEEK = "week"
     }

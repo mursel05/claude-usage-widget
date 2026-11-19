@@ -4,7 +4,8 @@
     <color name="text_primary">#FFF5F4EF</color>
     <color name="text_secondary">#FFA8A49C</color>
     <color name="accent">#FFD97757</color>
-    <color name="track">#33FFFFFF</color>
+    <color name="track">#1FFFFFFF</color>
+    <color name="resets_bg">#0FFFFFFF</color>
     <color name="level_warn">#FFF5A524</color>
     <color name="level_critical">#FFF05252</color>
     <color name="icon_bg">#FF1F1E1D</color>
