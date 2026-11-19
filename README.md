@@ -24,7 +24,7 @@ Or open the folder in Android Studio (it uses its own Gradle; accept if it offer
 
 1. Copy `app-debug.apk` to your phone and open it. Allow "Install unknown apps" for your file manager or browser when asked.
 2. Long-press the home screen → **Widgets** → **Claude Usage** → drag it onto the screen.
-3. A claude.ai login opens. **Sign in with email.** Google sign-in doesn't work in in-app browsers. The screen closes by itself once you're logged in.
+3. The widget shows **Tap to sign in**. Tap it, **sign in with email** (Google sign-in doesn't work in in-app browsers) and enter the code from the email. You can switch to your email app and come back; the screen closes by itself once you're logged in.
 
 Android 10+ may show an "app info" icon in the app drawer, because the app has no launcher screen. That's normal.
 

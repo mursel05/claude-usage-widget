@@ -10,18 +10,14 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
 
-        <!-- Opened by the launcher when the widget is added, or by tapping the widget when signed out. -->
+        <!-- Opened by tapping the widget when signed out or the session expired. -->
         <activity
             android:name=".LoginActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
-            android:excludeFromRecents="true"
-            android:exported="true"
+            android:exported="false"
+            android:launchMode="singleTask"
             android:theme="@android:style/Theme.Material.Light.NoActionBar"
-            android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
-            </intent-filter>
-        </activity>
+            android:windowSoftInputMode="adjustResize" />
 
         <receiver
             android:name=".UsageWidgetProvider"

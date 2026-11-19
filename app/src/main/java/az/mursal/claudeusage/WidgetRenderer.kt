@@ -42,17 +42,32 @@ object WidgetRenderer {
         val views = RemoteViews(context.packageName, R.layout.widget_usage)
         val now = System.currentTimeMillis()
 
+        // L2 sign-in card replaces the rings entirely while signed out or expired; tap opens login.
+        val needsLogin = s.status == Status.SIGNED_OUT || s.status == Status.AUTH_EXPIRED
+        views.setOnClickPendingIntent(
+            R.id.widget_root,
+            if (needsLogin) loginIntent(context) else refreshIntent(context),
+        )
+        if (needsLogin) {
+            views.setViewVisibility(R.id.content, View.GONE)
+            views.setViewVisibility(R.id.signin_panel, View.VISIBLE)
+            views.setTextViewText(
+                R.id.signin_title,
+                context.getString(
+                    if (s.status == Status.AUTH_EXPIRED) R.string.signin_title_expired else R.string.signin_title
+                ),
+            )
+            return views
+        }
+        views.setViewVisibility(R.id.signin_panel, View.GONE)
+        views.setViewVisibility(R.id.content, View.VISIBLE)
+
         // While refreshing, keep the last numbers visible but dimmed, plus a spinner row.
-        val loading = s.refreshing && s.status != Status.SIGNED_OUT && s.status != Status.AUTH_EXPIRED
+        val loading = s.refreshing
         bindRing(context, views, s.fiveHour, R.id.five_ring, R.id.five_pct, R.id.five_reset, now, loading)
         bindRing(context, views, s.weekly, R.id.week_ring, R.id.week_pct, R.id.week_reset, now, loading)
 
-        val statusText = when (s.status) {
-            Status.SIGNED_OUT -> "Tap to sign in"
-            Status.AUTH_EXPIRED -> "Session expired · tap to sign in"
-            Status.ERROR -> s.errorMessage
-            Status.OK -> null
-        }
+        val statusText = if (s.status == Status.ERROR) s.errorMessage else null
 
         val resets = s.resets
         views.setViewVisibility(R.id.loading_row, if (loading) View.VISIBLE else View.GONE)
@@ -77,12 +92,6 @@ object WidgetRenderer {
                 views.setViewVisibility(R.id.resets_row, View.GONE)
             }
         }
-
-        val needsLogin = s.status == Status.SIGNED_OUT || s.status == Status.AUTH_EXPIRED
-        views.setOnClickPendingIntent(
-            R.id.widget_root,
-            if (needsLogin) loginIntent(context) else refreshIntent(context),
-        )
         return views
     }
 
@@ -192,7 +201,9 @@ object WidgetRenderer {
         1,
         Intent(context, LoginActivity::class.java)
             .putExtra(LoginActivity.EXTRA_FORCE_LOGIN, true)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK),
+            // No CLEAR_TASK: tapping again while a login is in progress resumes it (singleTask)
+            // instead of restarting it and losing the email already typed.
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
 

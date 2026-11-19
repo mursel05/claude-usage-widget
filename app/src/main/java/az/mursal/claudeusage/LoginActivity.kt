@@ -18,7 +18,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 
 /**
- * Widget configuration screen = claude.ai login in a WebView.
+ * claude.ai login in a WebView, opened by tapping the widget while signed out or expired.
  *
  * Once the logged-in web app calls /api/organizations/{uuid}/..., we know the session is valid,
  * so we keep the cookies + org id and close. The app never sees the password.

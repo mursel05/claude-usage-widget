@@ -6,5 +6,8 @@
     <string name="label_weekly">Weekly</string>
     <string name="placeholder">—</string>
     <string name="updating">Updating…</string>
+    <string name="signin_title">Claude usage</string>
+    <string name="signin_title_expired">Session expired</string>
+    <string name="signin_action">Tap to sign in</string>
     <string name="login_hint">Sign in with your email. Google sign-in doesn\u2019t work inside widgets, so it\u2019s hidden here.</string>
 </resources>

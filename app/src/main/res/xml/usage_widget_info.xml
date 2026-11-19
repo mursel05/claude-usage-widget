@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 2×2 by default; can be stretched horizontally (W1: same layout, spread out). Height fixed. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:configure="az.mursal.claudeusage.LoginActivity"
     android:description="@string/widget_description"
     android:initialLayout="@layout/widget_usage"
     android:minWidth="110dp"
