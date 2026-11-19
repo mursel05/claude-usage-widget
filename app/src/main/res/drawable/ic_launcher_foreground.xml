@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Simple gauge: grey track ring with a 270° accent arc. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:pathData="M54,30 A24,24 0 1,1 53.99,30"
+        android:strokeWidth="7"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:pathData="M54,30 A24,24 0 1,1 30,54"
+        android:strokeLineCap="round"
+        android:strokeWidth="7"
+        android:strokeColor="#FFD97757" />
+</vector>
