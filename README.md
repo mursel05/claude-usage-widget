@@ -42,5 +42,5 @@ Android 10+ may show an "app info" icon in the app drawer, because the app has n
 
 - **Unofficial endpoint.** `/api/organizations/{id}/usage` is claude.ai's internal web API. Anthropic can change or block it at any time.
 - **The session cookie is a full-access credential.** It's stored in app-private storage with backup disabled and is only ever sent to `claude.ai`. Anyone with root access to your phone could read it.
-- **Debug signing.** Each CI run signs with a fresh debug key, so installing a new build over an old one fails. Uninstall first, or add a fixed release keystore via GitHub secrets.
+- **Signing.** CI signs with a permanent key from the `KEYSTORE_BASE64` and `KEYSTORE_PASSWORD` repo secrets, so new builds install over old ones. Without those secrets it falls back to a throwaway debug key, and you'd have to uninstall between builds.
 - Only Pro, Max, Team and Enterprise plans have usage windows. Free accounts may show `—`.
