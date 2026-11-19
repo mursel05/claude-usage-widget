@@ -6,5 +6,5 @@
     <string name="label_weekly">Weekly</string>
     <string name="placeholder">—</string>
     <string name="updating">Updating…</string>
-    <string name="login_hint">Sign in with email. Google sign-in is blocked inside in-app browsers.</string>
+    <string name="login_hint">Sign in with your email. Google sign-in doesn\u2019t work inside widgets, so it\u2019s hidden here.</string>
 </resources>

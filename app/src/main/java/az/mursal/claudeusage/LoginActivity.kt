@@ -67,6 +67,11 @@ class LoginActivity : Activity() {
             }
 
             override fun onPageFinished(view: WebView, url: String) {
+                // Google blocks OAuth in WebViews (403 disallowed_useragent): hide its button so only
+                // working sign-in options show.
+                if (url.startsWith("$CLAUDE_URL/login") || url.startsWith("$CLAUDE_URL/signup")) {
+                    view.evaluateJavascript(HIDE_GOOGLE_JS, null)
+                }
                 // Fallback if no org API call was intercepted.
                 lastActiveOrg(CookieManager.getInstance().getCookie(CLAUDE_URL))?.let { tryComplete(it) }
             }
@@ -173,5 +178,21 @@ class LoginActivity : Activity() {
         private const val UUID = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
         private val UUID_REGEX = Regex(UUID)
         private val ORG_REGEX = Regex("^https://claude\\.ai/api/organizations/($UUID)(?:[/?]|$)")
+
+        /** The login page renders client-side, so keep hiding Google buttons as the DOM changes. */
+        private val HIDE_GOOGLE_JS = """
+            (function () {
+              if (window.__cuwHideGoogle) return;
+              window.__cuwHideGoogle = true;
+              var hide = function () {
+                document.querySelectorAll('button, a, [role="button"]').forEach(function (el) {
+                  var label = (el.textContent || '') + ' ' + (el.getAttribute('aria-label') || '');
+                  if (/google/i.test(label)) el.style.display = 'none';
+                });
+              };
+              hide();
+              new MutationObserver(hide).observe(document.documentElement, { childList: true, subtree: true });
+            })();
+        """.trimIndent()
     }
 }
