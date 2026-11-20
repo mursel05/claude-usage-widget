@@ -9,5 +9,6 @@
     <string name="signin_title">Claude usage</string>
     <string name="signin_title_expired">Session expired</string>
     <string name="signin_action">Tap to sign in</string>
-    <string name="login_hint">Sign in with your email. Google sign-in doesn\u2019t work inside widgets, so it\u2019s hidden here.</string>
+    <string name="login_hint_title">Sign in with email</string>
+    <string name="login_hint">Google won\u2019t work here. Enter the code from the email.</string>
 </resources>
